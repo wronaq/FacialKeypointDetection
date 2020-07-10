@@ -1,3 +1,13 @@
+data/
+saved_models/
+.vscode
+*.pdf
+5. Zip Your Project Files and Submit.ipynb
+*.zip
+*.html
+filelist.txt
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
