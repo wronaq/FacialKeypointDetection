@@ -6,6 +6,7 @@ saved_models/
 *.zip
 *.html
 filelist.txt
+output.avi
 
 
 # Byte-compiled / optimized / DLL files

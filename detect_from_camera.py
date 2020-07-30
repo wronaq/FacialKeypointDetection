@@ -73,13 +73,36 @@ def detect_keypoints(save=False):
             pred_keypoints = model(roi_torch)
             keypoints_np = pred_keypoints.view((68, -1)).data.numpy()
             keypoints_unnorm = keypoints_np * 50 + 100
+            keypoints_list = [
+                (
+                    int(np.round(ptx * scaling_factor_x, 0) + x - x_minus),
+                    int(np.round(pty * scaling_factor_y, 0) + y - y_minus),
+                )
+                for ptx, pty in zip(keypoints_unnorm[:, 0], keypoints_unnorm[:, 1])
+            ]
 
-            # add keypoints
-            for ptx, pty in zip(keypoints_unnorm[:, 0], keypoints_unnorm[:, 1]):
-                ptx = int(np.round(ptx * scaling_factor_x, 0) + x - x_minus)
-                pty = int(np.round(pty * scaling_factor_y, 0) + y - y_minus)
-                cv2.circle(
-                    frame, (ptx, pty), radius=2, color=(255, 0, 0),
+            # add keypoints to frame
+            for i in range(len(keypoints_list)):
+
+                if i in [16, 21, 26, 35, 41, 47, 59, 67]:
+                    continue
+
+                prev = keypoints_list[i]
+                next = keypoints_list[i + 1]
+
+                # colors
+                if i < 16 or (i > 25 and i < 35):
+                    color = (85, 222, 250)  # contour and nose
+                elif i < 26:
+                    color = (33, 67, 79)  # eyebrows
+                elif i < 47:
+                    color = (245, 133, 34)  # eyes
+                else:
+                    color = (69, 69, 247)  # mouth
+
+                # add
+                cv2.line(
+                    frame, prev, next, color=color, thickness=2,
                 )
 
         # plot frame with keypoints
@@ -87,7 +110,7 @@ def detect_keypoints(save=False):
 
         # save to file
         if save:
-            out.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+            out.write(frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
