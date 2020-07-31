@@ -3,12 +3,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 # can use the below import should you choose to initialize the weights of your Net
 import torch.nn.init as I
+from torchvision import models
 
 
 class Net(nn.Module):
-
     def __init__(self):
         super(Net, self).__init__()
 
@@ -29,7 +30,7 @@ class Net(nn.Module):
         self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2)
 
         # 3rd structure (size input of flattened feature map = 64*54*54
-        self.fc1 = nn.Linear(in_features=64*54*54, out_features=2048)
+        self.fc1 = nn.Linear(in_features=64 * 54 * 54, out_features=2048)
         self.dropout1 = nn.Dropout(p=0.5)
         self.fc2 = nn.Linear(in_features=2048, out_features=512)
         self.dropout2 = nn.Dropout(p=0.5)
@@ -38,8 +39,6 @@ class Net(nn.Module):
         ## Note that among the layers to add, consider including:
         # maxpooling layers, multiple conv layers, fully-connected layers, and other layers (such as dropout or batch normalization) to avoid overfitting
 
-
-
     def forward(self, x):
         ## TODO: Define the feedforward behavior of this model
         ## x is the input image and, as an example, here you may choose to include a pool/conv step:
@@ -47,7 +46,7 @@ class Net(nn.Module):
 
         x = self.maxpool1(F.relu(self.conv1(x)))
         x = self.maxpool2(F.relu(self.conv2(x)))
-        x = x.view(x.size(0), -1) # flatten
+        x = x.view(x.size(0), -1)  # flatten
         x = self.dropout1(F.relu(self.fc1(x)))
         x = self.dropout2(F.relu(self.fc2(x)))
         x = self.fc3(x)
@@ -55,3 +54,19 @@ class Net(nn.Module):
         # a modified x, having gone through all the layers of your model, should be returned
         return x
 
+
+class Resnet18_gray(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # using ResNet18 architecture (fine tuning - pretrained weights as initializations)
+        # changing first layer to grayscale images and setting last layer to output 68 points in 2D
+        self.resnet18 = models.resnet18(pretrained=True)
+        self.resnet18.conv1 = nn.Conv2d(
+            1, 64, kernel_size=7, stride=2, padding=3, bias=False
+        )
+        fc_inputs = self.resnet18.fc.in_features
+        self.resnet18.fc = nn.Linear(fc_inputs, 2 * 68)
+
+    def forward(self, x):
+
+        return self.resnet18(x)
