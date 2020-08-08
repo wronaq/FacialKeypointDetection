@@ -1,5 +1,6 @@
 data/
-saved_models/
+saved_models/*
+!saved_models/keypoints_resnet18_final.pt
 .vscode
 *.pdf
 5. Zip Your Project Files and Submit.ipynb
@@ -7,7 +8,7 @@ saved_models/
 *.html
 filelist.txt
 output.avi
-*.pt
+early_stopping_checkpoint.pt
 
 
 # Byte-compiled / optimized / DLL files
