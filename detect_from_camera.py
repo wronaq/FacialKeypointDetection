@@ -1,6 +1,9 @@
-import numpy as np
+import sys
+
 import cv2
+import numpy as np
 import torch
+
 from models import Resnet18_gray
 
 
@@ -132,4 +135,4 @@ def detect_keypoints(img_size, save=False):
 
 
 if __name__ == "__main__":
-    detect_keypoints(img_size=224, save=True)
+    detect_keypoints(img_size=224, save=sys.argv[1])
